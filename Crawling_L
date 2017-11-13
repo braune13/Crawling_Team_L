@@ -1,1 +1,17 @@
-import requests, json, datetime
+import requests, json, datetime, sys, bs4
+
+
+with open(sys.argv[1]) as f:
+    webpages = f.readlines()
+webpages = [x.strip() for x in webpages]
+
+for page in webpages:
+    html = requests.get(page)
+    soup = bs4.BeautifulSoup(html.text, "html.parser")
+    outlinks = soup.find_all("a")
+    timestamp = datetime.datetime.now().isoformat()
+    output = json.dumps({'url' : page, \
+        'timestamp': timestamp, \
+        'outlinks' : outlinks, \
+        'html' : html.text, \
+        'docs' : ''})
