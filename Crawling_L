@@ -9,9 +9,11 @@ for page in webpages:
     html = requests.get(page)
     soup = bs4.BeautifulSoup(html.text, "html.parser")
     outlinks = soup.find_all("a")
+    outlinks = [str(i) for i in outlinks]
     timestamp = datetime.datetime.now().isoformat()
     output = json.dumps({'url' : page, \
         'timestamp': timestamp, \
         'outlinks' : outlinks, \
         'html' : html.text, \
-        'docs' : ''})
+        'docs' : "test.txt"})
+    print(output)
