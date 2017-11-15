@@ -1,5 +1,5 @@
 import requests, json, datetime, sys, bs4
-
+from Crawling_L_Sockets import send_crawled
 
 with open(sys.argv[1]) as f:
     webpages = f.readlines()
@@ -16,4 +16,6 @@ for page in webpages:
         'outlinks' : outlinks, \
         'html' : html.text, \
         'docs' : "test.txt"})
+
+    send_crawled(output)
     print(output)
