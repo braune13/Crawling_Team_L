@@ -13,6 +13,7 @@ def index():
 @sio.on('connect')
 def connect(sid, environ):
     print('connect ' + sid)
+    sio.emit('connected', sid)
 
 @sio.on('my message')
 def message(sid, data):
@@ -27,4 +28,4 @@ if __name__ == '__main__':
     app = socketio.Middleware(sio, app)
 
     # deploy as an eventlet WSGI server
-    eventlet.wsgi.server(eventlet.listen(('127.0.01', 8000)), app)
+    eventlet.wsgi.server(eventlet.listen(('127.0.0.1', 5000)), app)

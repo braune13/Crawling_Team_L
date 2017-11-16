@@ -6,7 +6,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 # =======================================================================================================
 ip = "127.0.01"
-port = "8000"
+port = "5000"
 # =======================================================================================================
 
 def on_connect():
@@ -31,4 +31,4 @@ with SocketIO(ip, port, LoggingNamespace) as socketIO:
     socketIO.on('new crawler data', handle_crawler_data)
 
     # Emit
-    socketIO.emit('my message', "poop")
+    socketIO.emit('my message', "testing testing 1 2 3")
