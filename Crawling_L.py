@@ -17,7 +17,7 @@ for page in webpages:
         directory=page.rsplit("/",1)[0]
         link=directory+'/'+file
 
-        if file.endswith(('txt')): #can be expanded to other file types with a comma
+        if file.endswith(('txt','md')): #can be expanded to other file types with a comma
             text=bs4.BeautifulSoup(requests.get(link).text, "html.parser")
             text=["name:",link,"text:",text]
             docs.append(text)
