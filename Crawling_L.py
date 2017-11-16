@@ -32,7 +32,6 @@ for page in webpages:
             ext=link.rsplit(".",1)[-1]
             text=[link,ext,"text:",text]
             docs.append(text)
-            print(text,file=open("a.txt","a"))
         elif file.endswith(('pdf')): # special case if PDF
             pdf=file.rsplit("/",1)[-1]
             try:
