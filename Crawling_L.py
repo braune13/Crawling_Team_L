@@ -1,5 +1,15 @@
-import requests, json, datetime, sys, bs4, PyPDF2, os
+import requests, json, datetime, sys, bs4, os
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
+from pdfminer.pdfdevice import PDFDevice
+from pdfminer.pdfpage import PDFTextExtractionNotAllowed
+from pdfminer.layout import LAParams, LTTextBox, LTTextLine
+from pdfminer.converter import PDFPageAggregator
+
 from urllib.request import urlopen
+import urllib.error
 
 # =======================================================================================================
 def get_webpages(filename):
@@ -22,44 +32,48 @@ def parse_webpages(webpages):
             directory=page.rsplit("/",1)[0]
             link=directory+'/'+file
 
-            if file.endswith(('txt')): #can be expanded to other file types with a comma
-                text=bs4.BeautifulSoup(requests.get(link).text, "html.parser")
-                text=["name:",link,"text:",text]
+        if file.endswith(('txt','md')): #can be expanded to other file types with a comma
+            text=bs4.BeautifulSoup(requests.get(link).text, "html.parser")
+            ext=link.rsplit(".",1)[-1]
+            text=[link,ext,"text:",text]
+            docs.append(text)
+        elif file.endswith(('pdf')): # special case if PDF
+            pdf=file.rsplit("/",1)[-1]
+            try:
+                response = urlopen(link) # must first check if pdf is found
+
+            except urllib.error.HTTPError as e:
+                text=[link,"pdf","text:","404"] #if 404 error, put 404 as text
                 docs.append(text)
 
-            elif file.endswith(('pdf')): # special case if PDF
-                pdf=file.rsplit("/",1)[-1]
+            else:
+                file = open(pdf, 'wb') #otherwise must save the pdf to run pypdf2
+                file.write(response.read())
+                file.close()
 
-                try:
-                    response = urlopen(link) # must first check if pdf is found
+                txt=""
+                file=open(pdf,'rb')
+                parser = PDFParser(file)
+                document = PDFDocument(parser)
+                rsrcmgr = PDFResourceManager()
+                laparams = LAParams()
+                device = PDFPageAggregator(rsrcmgr, laparams=laparams)
+                interpreter = PDFPageInterpreter(rsrcmgr, device)
+                for p in PDFPage.create_pages(document):
+                	# As the interpreter processes the page stored in PDFDocument object
+                	interpreter.process_page(p)
+                	# The device renders the layout from interpreter
+                	layout = device.get_result()
+                	# Out of the many LT objects within layout, we are interested in LTTextBox and LTTextLine
+                	for lt_obj in layout:
+                		if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
+                			txt += lt_obj.get_text()
 
-                except urllib.error.HTTPError as e:
-                    text=["name:",link,"text:","404"] #if 404 error, put 404 as text
-                    docs.append(text)
-
-                else:
-                    file = open(pdf, 'wb') #otherwise must save the pdf to run pypdf2
-                    file.write(response.read())
-                    file.close()
-
-                    pdfFileObj = open(pdf, 'rb')
-                    pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
-                    pages=pdfReader.numPages
-
-                    j=0
-                    txt=""
-
-                    while j<pages:
-                        pageObj = pdfReader.getPage(j)
-                        txt+=pageObj.extractText()
-                        j=j+1
-
-                    name=["name:",link,"text:", txt]
-                    os.remove(pdf) #remove the saved file when done
-                    docs.append(name)
-
-            else: #if not supported file type, continue
-                continue
+                #close the pdf file
+                file.close()
+                name=[link,"pdf","text:", txt]
+                os.remove(pdf) #remove the saved file when done
+                docs.append(name)
 
         docs=[[str(i) for i in lis] for lis in docs]
         timestamp = datetime.datetime.now().isoformat()
