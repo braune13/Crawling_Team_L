@@ -1,10 +1,10 @@
-import threading, Crawling_L, multiprocessing, queue
+import threading, Crawling_L, multiprocessing, queue, Crawling_L_Sockets
 
 def worker(urlQueue):
     while(True):
         url = urlQueue.get(block=True, timeout=60)
-        Crawling_L.parse_webpages((url,))
-        #send responses
+        jsonObject = Crawling_L.parse_webpages((url,))
+        Crawling_L_Sockets.send_crawled_json(json_data=jsonObject)
     return
 
 class threadManager:
