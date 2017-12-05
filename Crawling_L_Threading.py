@@ -4,7 +4,6 @@ def worker(urlQueue):
     while(True):
         url = urlQueue.get(block=True, timeout=60)
         jsonObject = Crawling_L.parse_webpages((url,))
-        crawled_id = Crawling_L.insert_webpage(jsonObject)
     return
 
 class threadManager:

@@ -4,6 +4,7 @@ from flask import Flask, jsonify, request, render_template
 from flask_pymongo import PyMongo
 import json
 import Crawling_L_Threading
+import Crawling_L
 # ==================================================================================
 # Configuration
 
@@ -32,26 +33,26 @@ def new_links():
     # Loop through links array add each link to the queue
     for link in links:
       thread_manager.addToQueue(link)
-      
+    
+
     # Call threading parent function
     thread_manager.createThreads()
 
     # Return success message
     output = {
         'status': 'success', 
-        'message': 'Links successfully added to queue'
+        'message': 'Links successfully added'
     }
     return jsonify({'result' : output})
 # ----------------------------------------------------------------------------------
 # Takes a json object from a crawled webpage and adds it to the mongo database
 
-@app.route('/add_webpage', methods=['POST'])
-def add_webpage():
+# @app.route('/add_webpage', methods=['POST'])
+def add_webpage(url_data):
     webpages = mongo.db.webpages
-    url_json = request.json['webpage_data']
+    url_json = json.loads(url_data)
     url = url_json['url']
-    print(url)
-    
+
     is_found = webpages.find_one({'url' : url})
     if is_found:
          webpages.delete_one({'url': url})

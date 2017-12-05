@@ -11,7 +11,6 @@ from pdfminer.converter import PDFPageAggregator
 from urllib.request import urlopen
 import urllib.error
 
-import requests
 import Crawling_L_REST
 api_url = 'https://crawling-team-l-braune131.c9users.io'
 # =======================================================================================================
@@ -89,22 +88,10 @@ def parse_webpages(webpages):
             'outlinks' : outlinks, \
             'html' : html.text, \
             'docs' : docs})
-        return output
+            
+        Crawling_L_REST.add_webpage(output)
         
-# =======================================================================================================
-# Adds webiste data to mongo database
-
-def insert_webpage(url_data):
-    request_url = api_url + '/add_webpage'
-    json_data = json.loads(url_data)
-    request_data = {'webpage_data': json_data}
-    headers = {'content-type': 'application/json'}
-    request_post = requests.post(request_url, data=json.dumps(request_data), headers=headers)
-    result = request_post.text
-    print(result)
-    
-    return
-
+        return output
 # =======================================================================================================
 # Main
 
