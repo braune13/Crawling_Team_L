@@ -2,7 +2,8 @@
 
 from flask import Flask, jsonify, request, render_template
 from flask_pymongo import PyMongo
-from Crawling_L_Threading import threadManager
+import json
+import Crawling_L_Threading
 # ==================================================================================
 # Configuration
 
@@ -31,13 +32,43 @@ def new_links():
     # Loop through links array add each link to the queue
     for link in links:
       thread_manager.addToQueue(link)
+      
+    # Call threading parent function
+    thread_manager.createThreads()
 
     # Return success message
-    output = {'status': 'success', 'message': 'Links successfully added to queue'}
+    output = {
+        'status': 'success', 
+        'message': 'Links successfully added to queue'
+    }
     return jsonify({'result' : output})
+# ----------------------------------------------------------------------------------
+# Takes a json object from a crawled webpage and adds it to the mongo database
+
+@app.route('/add_webpage', methods=['POST'])
+def add_webpage():
+    webpages = mongo.db.webpages
+    url_json = request.json['webpage_data']
+    url = url_json['url']
+    print(url)
+    
+    is_found = webpages.find_one({'url' : url})
+    if is_found:
+         webpages.delete_one({'url': url})
+    
+    webpage_id = webpages.insert_one(url_json)
+    id_string = str(webpage_id)
+    
+    output = {
+        'status': 'success', 
+        'message': 'Webpage data successfully added to mongo',
+        'id': id_string
+    }
+    
+    return jsonify({'result': output})
 # ==================================================================================
 # MAIN
 
 if __name__ == '__main__':
-    thread_manager = threadManager()
-    app.run(debug=True)
+    thread_manager = Crawling_L_Threading.threadManager()
+    app.run(host= '0.0.0.0', port=8080, debug=True)
