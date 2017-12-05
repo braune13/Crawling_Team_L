@@ -2,7 +2,10 @@ import threading, Crawling_L, multiprocessing, queue
 
 def worker(urlQueue):
     while(True):
-        url = urlQueue.get(block=True, timeout=60)
+        try:
+            url = urlQueue.get(block=True, timeout=60)
+        except:
+            continue
         jsonObject = Crawling_L.parse_webpages((url,))
     return
 
