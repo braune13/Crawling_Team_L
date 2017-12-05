@@ -32,9 +32,6 @@ def new_links():
     # Loop through links array add each link to the queue
     for link in links:
       thread_manager.addToQueue(link)
-      
-    # Call threading parent function
-    thread_manager.createThreads()
 
     # Return success message
     output = {
@@ -70,5 +67,6 @@ def add_webpage():
 # MAIN
 
 if __name__ == '__main__':
+    #creates threadmanager and spawns threads
     thread_manager = Crawling_L_Threading.threadManager()
     app.run(host= '0.0.0.0', port=8080, debug=True)
