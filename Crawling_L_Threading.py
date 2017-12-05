@@ -7,8 +7,8 @@ def worker(urlQueue):
         except:
             print(threading.current_thread().getName(), ": The Q is empty")
             continue
-        #jsonObject = Crawling_L.parse_webpages((url,))
-        #crawled_id = Crawling_L.insert_webpage(jsonObject)
+        jsonObject = Crawling_L.parse_webpages((url,))
+        crawled_id = Crawling_L.insert_webpage(jsonObject)
     return
 
 class threadManager:
