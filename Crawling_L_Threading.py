@@ -5,7 +5,7 @@ def worker(urlQueue):
         try:
             url = urlQueue.get(block=True, timeout=3)
         except:
-            print(threading.current_thread().getName(), ": The Q is empty")
+            # print(threading.current_thread().getName(), ": The Q is empty")
             continue
         
         jsonObject = Crawling_L.parse_webpages((url,))

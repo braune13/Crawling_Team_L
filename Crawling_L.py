@@ -89,7 +89,8 @@ def parse_webpages(webpages):
             'html' : html.text, \
             'docs' : docs})
             
-        Crawling_L_REST.add_webpage(output)
+        with Crawling_L_REST.app.app_context():  
+            Crawling_L_REST.add_webpage(output)
         
         return output
 # =======================================================================================================

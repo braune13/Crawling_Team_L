@@ -62,7 +62,7 @@ def add_webpage(url_data):
         'id': id_string
     }
     
-    return jsonify({'result': output})
+    return {'result': output}
 # ==================================================================================
 # MAIN
 
