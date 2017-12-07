@@ -39,15 +39,27 @@ def parse_webpages(webpages):
             link=directory+'/'+file
 
             if file.endswith(('txt','md')): #can be expanded to other file types with a comma
-                text=bs4.BeautifulSoup(requests.get(link).text, "html.parser")
-                ext=link.rsplit(".",1)[-1]
-                text=[link,ext,text]
-                # text = {'link': link, 'ext': ext, 'text': text}
-                docs.append(text)
+                if file.startswith(('http://','www.')):
+                    text=bs4.BeautifulSoup(requests.get(file).text, "html.parser")
+                    ext=file.rsplit(".",1)[-1]
+                    text=[file,ext,text]
+                    # text = {'link': link, 'ext': ext, 'text': text}
+                    docs.append(text)
+                else:
+                    text=bs4.BeautifulSoup(requests.get(link).text, "html.parser")
+                    ext=link.rsplit(".",1)[-1]
+                    text=[link,ext,text]
+                    # text = {'link': link, 'ext': ext, 'text': text}
+                    docs.append(text)
             elif file.endswith(('pdf')): # special case if PDF
-                pdf=file.rsplit("/",1)[-1]
+                x=file
                 try:
-                    response = urlopen(link) # must first check if pdf is found
+                    if file.startswith(('http://','www.')):
+                        pdf=file.rsplit("/",1)[-1]
+                        response=urlopen(file)
+                    else:
+                        pdf=file.rsplit("/",1)[-1]
+                        response = urlopen(link) # must first check if pdf is found
 
                 except urllib.error.HTTPError as e:
                     text=[link,"pdf","404"] #if 404 error, put 404 as text
@@ -58,7 +70,8 @@ def parse_webpages(webpages):
                     file = open(pdf, 'wb') #otherwise must save the pdf to run pypdf2
                     file.write(response.read())
                     file.close()
-
+                    if x.startswith('http://'):
+                        link=x
                     txt=""
                     file=open(pdf,'rb')
                     parser = PDFParser(file)
