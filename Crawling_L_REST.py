@@ -46,14 +46,14 @@ def new_links():
 # @app.route('/add_webpage', methods=['POST'])
 def add_webpage(url_data):
     webpages = mongo.db.webpages
-    url_json = json.loads(url_data)
-    url = url_json['url']
+    # url_json = json.loads(url_data)
+    url = url_data['url']
 
     is_found = webpages.find_one({'url' : url})
     if is_found:
          webpages.delete_one({'url': url})
     
-    webpage_id = webpages.insert_one(url_json)
+    webpage_id = webpages.insert_one(url_data)
     id_string = str(webpage_id)
     
     output = {

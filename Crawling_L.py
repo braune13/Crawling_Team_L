@@ -32,7 +32,7 @@ def parse_webpages(webpages):
         outlinks = soup.find_all("a")
         links=[str(i.get('href')) for i in outlinks]
         outlinks = [str(i) for i in outlinks]
-        docs=[] #docs is a list of lists in order: "name:", *name*, "text:", *text*
+        docs=[] #docs is a list of objects in order: "name:", *name*, "text:", *text*
 
         for file in links:
             directory=page.rsplit("/",1)[0]
@@ -41,7 +41,8 @@ def parse_webpages(webpages):
             if file.endswith(('txt','md')): #can be expanded to other file types with a comma
                 text=bs4.BeautifulSoup(requests.get(link).text, "html.parser")
                 ext=link.rsplit(".",1)[-1]
-                text=[link,ext,"text:",text]
+                text=[link,ext,text]
+                # text = {'link': link, 'ext': ext, 'text': text}
                 docs.append(text)
             elif file.endswith(('pdf')): # special case if PDF
                 pdf=file.rsplit("/",1)[-1]
@@ -49,7 +50,8 @@ def parse_webpages(webpages):
                     response = urlopen(link) # must first check if pdf is found
 
                 except urllib.error.HTTPError as e:
-                    text=[link,"pdf","text:","404"] #if 404 error, put 404 as text
+                    text=[link,"pdf","404"] #if 404 error, put 404 as text
+                    #text = {'link': link, 'ext': 'pdf', 'text': "404"}
                     docs.append(text)
 
                 else:
@@ -77,17 +79,14 @@ def parse_webpages(webpages):
 
                     #close the pdf file
                     file.close()
-                    name=[link,"pdf","text:", txt]
+                    name=[link,"pdf", txt]
+                    #name = {'link': link, 'ext': 'pdf', 'text': txt}
                     os.remove(pdf) #remove the saved file when done
                     docs.append(name)
 
         docs=[[str(i) for i in lis] for lis in docs]
         timestamp = datetime.datetime.now().isoformat()
-        output = json.dumps({'url' : page, \
-            'timestamp': timestamp, \
-            'outlinks' : outlinks, \
-            'html' : html.text, \
-            'docs' : docs})
+        output = {'url' : page, 'timestamp': timestamp, 'outlinks' : outlinks, 'html' : html.text, 'docs' : docs}
             
         with Crawling_L_REST.app.app_context():  
             Crawling_L_REST.add_webpage(output)
