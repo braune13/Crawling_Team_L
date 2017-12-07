@@ -2,7 +2,9 @@
 
 from flask import Flask, jsonify, request, render_template
 from flask_pymongo import PyMongo
+from bson.json_util import dumps
 import json
+import requests
 import Crawling_L_Threading
 import Crawling_L
 # ==================================================================================
@@ -54,6 +56,14 @@ def add_webpage(url_data):
          webpages.delete_one({'url': url})
     
     webpage_id = webpages.insert_one(url_data)
+
+    headers = {"Content-Type":"application/json", \
+                "Accept":"application/json"}
+    r = requests.post("http://teamz.cs.rpi.edu:8080/document", \
+    json = dumps(url_data) , headers = headers)
+    print(dumps(url_data, sort_keys=True, indent = 4, separators=(',',':')))
+    print(r.text)
+
     id_string = str(webpage_id)
     
     output = {
