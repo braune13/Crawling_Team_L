@@ -28,7 +28,6 @@ def get_webpages(filename):
 
 def parse_webpages(webpages):
     for page in webpages:
-        print(page)
         o = urlparse(page)
         domain = o.scheme + "://" + o.netloc
         rp = robotparser.RobotFileParser()
