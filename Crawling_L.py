@@ -9,7 +9,7 @@ from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from pdfminer.converter import PDFPageAggregator
 from urllib.request import urlopen
 from urllib.parse import urlparse
-from urllib import robotparser
+from reppy.robots import Robots
 import urllib.error
 
 import Crawling_L_REST
@@ -30,10 +30,10 @@ def parse_webpages(webpages):
     for page in webpages:
         o = urlparse(page)
         domain = o.scheme + "://" + o.netloc
-        rp = robotparser.RobotFileParser()
-        rp.set_url(domain+"/robots.txt")
-        rp.read()
-        if(rp.can_fetch("*", page)):
+        r = domain+"/robots.txt"
+        robots = Robots.fetch(r)
+        if(robots.allowed(page,'*')):
+            sitemaps = robots.sitemaps #this is a list of all the sitemaps for a website
             html = requests.get(page)
             soup = bs4.BeautifulSoup(html.text, "html.parser")
             outlinks = soup.find_all("a")
