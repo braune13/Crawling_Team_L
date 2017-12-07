@@ -61,8 +61,6 @@ def add_webpage(url_data):
                 "Accept":"application/json"}
     r = requests.post("http://teamz.cs.rpi.edu:8080/document", \
     data = dumps(url_data) , headers = headers)
-    print(dumps(url_data, sort_keys=True, indent = 4, separators=(',',':')))
-    print(r.text)
 
     id_string = str(webpage_id)
     
