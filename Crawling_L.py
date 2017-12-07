@@ -7,9 +7,9 @@ from pdfminer.pdfdevice import PDFDevice
 from pdfminer.pdfpage import PDFTextExtractionNotAllowed
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine
 from pdfminer.converter import PDFPageAggregator
-from urlparse import urlparse
 from urllib.request import urlopen
-import robotparser
+from urllib.parse import urlparse
+from urllib import robotparser
 import urllib.error
 
 import Crawling_L_REST
@@ -28,12 +28,13 @@ def get_webpages(filename):
 
 def parse_webpages(webpages):
     for page in webpages:
-        stem = urlparse(page)
-        domain = '{uri.scheme}://{uri.netloc}/'.format(uri=stem)
+        print(page)
+        o = urlparse(page)
+        domain = o.scheme + "://" + o.netloc
         rp = robotparser.RobotFileParser()
-        rp.set_url(domain+"robots.txt")
+        rp.set_url(domain+"/robots.txt")
         rp.read()
-        if(rp.can_fetch("*", page))
+        if(rp.can_fetch("*", page)):
             html = requests.get(page)
             soup = bs4.BeautifulSoup(html.text, "html.parser")
             outlinks = soup.find_all("a")
@@ -112,6 +113,7 @@ def parse_webpages(webpages):
                 Crawling_L_REST.add_webpage(output)
             
             return output
+        
 # =======================================================================================================
 # Main
 
