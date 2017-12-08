@@ -28,9 +28,7 @@ def get_webpages(filename):
 
 def parse_webpages(webpages):
     for page in webpages:
-        o = urlparse(page)
-        domain = o.scheme + "://" + o.netloc
-        r = domain+"/robots.txt"
+        r = Robots.robots_url(page)
         robots = Robots.fetch(r)
         if(robots.allowed(page,'*')):
             sitemaps = robots.sitemaps #this is a list of all the sitemaps for a website
