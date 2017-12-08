@@ -34,6 +34,7 @@ def parse_webpages(webpages):
         robots = Robots.fetch(r)
         if(robots.allowed(page,'*')):
             sitemaps = robots.sitemaps #this is a list of all the sitemaps for a website
+            sitemaps_list = list(sitemaps)
             html = requests.get(page)
             soup = bs4.BeautifulSoup(html.text, "html.parser")
             outlinks = soup.find_all("a")
@@ -106,7 +107,7 @@ def parse_webpages(webpages):
 
             docs=[[str(i) for i in lis] for lis in docs]
             timestamp = datetime.datetime.now().isoformat()
-            output = {'url' : page, 'timestamp': timestamp, 'outlinks' : outlinks, 'html' : html.text, 'docs' : docs}
+            output = {'url' : page, 'timestamp': timestamp, 'outlinks' : outlinks, 'html' : html.text, 'docs' : docs, 'sitemaps': sitemaps_list}
                 
             with Crawling_L_REST.app.app_context():  
                 Crawling_L_REST.add_webpage(output)
