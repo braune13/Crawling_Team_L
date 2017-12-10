@@ -1,4 +1,8 @@
-import threading, multiprocessing, queue, Crawling_L
+import threading
+import multiprocessing
+import queue
+import Crawling_L
+
 
 def worker(urlQueue):
     while(True):
@@ -7,10 +11,11 @@ def worker(urlQueue):
         except:
             # print(threading.current_thread().getName(), ": The Q is empty")
             continue
-        
+
         jsonObject = Crawling_L.parse_webpages((url,))
-        
+
         return
+
 
 class threadManager:
     def __init__(self):
@@ -22,9 +27,11 @@ class threadManager:
             self.threads.append(t)
             t.start()
         return
+
     def addToQueue(self, url):
         self.urlQueue.put(url)
         return
+
 
 '''if __name__ == "__main__":
     man = threadManager()
