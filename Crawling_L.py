@@ -19,7 +19,7 @@ import urllib.error
 
 import Crawling_L_REST
 api_url = 'https://crawling-team-l-braune131.c9users.io'
-# =======================================================================================================
+# =========================================================
 # Get's webpage URLs from a file -- used for testing only
 
 
@@ -29,24 +29,31 @@ def get_webpages(filename):
     webpages = [x.strip() for x in webpages]
     return webpages
 
-# =======================================================================================================
+# =========================================================
 # Gets webpage data from a given URL
 
-
+''' parse_webpages:
+    parse_webpages is given a list of webpages and it will
+    check if the crawler is allowed to crawl that page from
+    the robots.txt file.  If it is allowed to crawl, it will
+    obtain the sitemaps from that page, the html of the page,
+    the links from the page, and all the documents from that
+    page. '''
 def parse_webpages(webpages):
     for page in webpages:
+        # obtain the robots.txt url
         r = Robots.robots_url(page)
         robots = Robots.fetch(r)
         if(robots.allowed(page, '*')):
             # sitemaps is a list of all the sitemaps for a website
             sitemaps = robots.sitemaps
             sitemaps_list = list(sitemaps)
-            html = requests.get(page)
+            html = requests.get(page) # html of the webpage
             soup = bs4.BeautifulSoup(html.text, "html.parser")
-            outlinks = soup.find_all("a")
+            outlinks = soup.find_all("a") # all the outlinks
             links = [str(i.get('href')) for i in outlinks]
             outlinks = [str(i) for i in outlinks]
-            docs = []
+            docs = [] # the documents on the page
 
             for file in links:
                 directory = page.rsplit("/", 1)[0]

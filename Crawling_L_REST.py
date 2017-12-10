@@ -61,9 +61,11 @@ def add_webpage(url_data):
 
     webpage_id = webpages.insert_one(url_data)
 
+    # this section is for sending our data to text transform
+    textTransformURL = "http://teamz.cs.rpi.edu:8080/document"
     headers = {"Content-Type": "application/json",
                "Accept": "application/json"}
-    r = requests.post("http://teamz.cs.rpi.edu:8080/document",
+    r = requests.post(textTransformURL,
                       data=dumps(url_data), headers=headers)
 
     id_string = str(webpage_id)
